@@ -15,12 +15,12 @@
  * This is a Configuration structure for a GPIO pin
  */
 typedef struct {
-	uint8_t GPIO_PinNumber;
-	uint8_t GPIO_PinMode;
-	uint8_t GPIO_PinSpeed;
-	uint8_t GPIO_PinPuPdControl;
-	uint8_t GPIO_PinOPType;
-	uint8_t GPIO_PinAltFunMode;
+    uint8_t GPIO_PinNumber;				/*!< possible values from @GPIO_PIN_NUMBERS >*/
+    uint8_t GPIO_PinMode; 				/*!< possible values from @GPIO_PIN_MODES >*/
+    uint8_t GPIO_PinSpeed;				/*!< possible values from @GPIO_PIN_SPEED >*/
+    uint8_t GPIO_PinPuPdControl;		/*!< possible values from @GPIO_PUPD_CONTROL >*/
+    uint8_t GPIO_PinOPType;				/*!< possible values from @GPIO_OP_TYPE >*/
+    uint8_t GPIO_PinAltFunMode;
 } GPIO_PinConfig_t;
 
 
@@ -29,9 +29,71 @@ typedef struct {
  */
 
 typedef struct {
-	GPIO_RegDef_t* pGPIOx; 				// This holds the base address of the GPIO Port to which the pin belongs
-	GPIO_PinConfig_t GPIO_PinConfig;	// This holds GPIO pin configuration settings
+    GPIO_RegDef_t* pGPIOx; 				// This holds the base address of the GPIO Port to which the pin belongs
+    GPIO_PinConfig_t GPIO_PinConfig;	// This holds GPIO pin configuration settings
 } GPIO_Handle_t;
+
+
+/*
+ * @GPIO_PIN_NUMBERS
+ * GPIO pin numbers
+ */
+#define GPIO_PIN_NO_0					0
+#define GPIO_PIN_NO_1					1
+#define GPIO_PIN_NO_2					2
+#define GPIO_PIN_NO_3					3
+#define GPIO_PIN_NO_4					4
+#define GPIO_PIN_NO_5					5
+#define GPIO_PIN_NO_6					6
+#define GPIO_PIN_NO_7					7
+#define GPIO_PIN_NO_8					8
+#define GPIO_PIN_NO_9					9
+#define GPIO_PIN_NO_10					10
+#define GPIO_PIN_NO_11					11
+#define GPIO_PIN_NO_12					12
+#define GPIO_PIN_NO_13					13
+#define GPIO_PIN_NO_14					14
+#define GPIO_PIN_NO_15					15
+
+
+/*
+ * @GPIO_PIN_MODES
+ * GPIO pin possible modes
+ */
+#define GPIO_MODE_IN					0 // Input (reset state)
+#define GPIO_MODE_OUT 					1 // General purpose output mode
+#define GPIO_MODE_ALTFN 				2 // Alternate function mode
+#define GPIO_MODE_ANALOG 				3 // Analog mode
+#define GPIO_MODE_IT_FT					4 // GPIO Mode Interrupt Falling Trigger
+#define GPIO_MODE_IT_RT					5 // GPIO Mode Interrupt Rising Trigger
+#define GPIO_MODE_IT_RFT				6 // GPIO Mode Interrupt Rising/Falling Trigger
+
+
+/*
+ * @GPIO_OP_TYPE
+ * GPIO pin possible output types
+ */
+#define GPIO_OP_TYPE_PP					0 // Output push-pull (reset state)
+#define GPIO_OP_TYPE_OD					1 // Output open-drain
+
+
+/*
+ * @GPIO_PIN_SPEED
+ * GPIO pin possible output speeds
+ */
+#define GPIO_SPEED_LOW					0 // Low speed
+#define GPIO_SPEED_MEDIUM				1 // Medium speed
+#define GPIO_SPEED_FAST					2 // High speed
+#define GPIO_SPEED_HIGH					3 // Very high speed
+
+
+/*
+ * @GPIO_PUPD_CONTROL
+ * GPIO pin pull up and pull down configuration macros
+ */
+#define GPIO_NO_PUPD					0 // No pull-up, pull-down
+#define GPIO_PIN_PU						1 // Pull-up
+#define GPIO_PIN_PD						2 // Pull-down
 
 
 /*********************************
