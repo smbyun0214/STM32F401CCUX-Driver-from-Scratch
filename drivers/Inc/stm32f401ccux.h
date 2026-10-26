@@ -260,14 +260,6 @@ typedef struct {
 #define GPIO_PIN_RESET					RESET
 
 
-
-
-
-
-
-
-
-
-
+#include "stm32f401ccux_gpio_driver.h"
 
 #endif /* INC_STM32F401CCUX_H_ */
