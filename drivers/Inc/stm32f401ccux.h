@@ -12,6 +12,46 @@
 
 #define __vo volatile
 
+/******************* Processor Specific Details *******************/
+/*
+ * ARM Cortex Mx Processor NVIC ISERx register Addresses
+ */
+// Table 6-1 NVIC registers
+#define NVIC_ISER0						((__vo uint32_t*)0xE000E100)
+#define NVIC_ISER1						((__vo uint32_t*)0xE000E104)
+#define NVIC_ISER2						((__vo uint32_t*)0xE000E108)
+#define NVIC_ISER3						((__vo uint32_t*)0xE000E10C)
+#define NVIC_ISER4						((__vo uint32_t*)0xE000E110)
+#define NVIC_ISER5						((__vo uint32_t*)0xE000E114)
+#define NVIC_ISER6						((__vo uint32_t*)0xE000E118)
+#define NVIC_ISER7						((__vo uint32_t*)0xE000E11C)
+
+
+/*
+ * ARM Cortex Mx Processor NVIC ICERx register Addresses
+ */
+// Table 6-1 NVIC registers
+#define NVIC_ICER0						((__vo uint32_t*)0xE000E180)
+#define NVIC_ICER1						((__vo uint32_t*)0xE000E184)
+#define NVIC_ICER2						((__vo uint32_t*)0xE000E188)
+#define NVIC_ICER3						((__vo uint32_t*)0xE000E18C)
+#define NVIC_ICER4						((__vo uint32_t*)0xE000E190)
+#define NVIC_ICER5						((__vo uint32_t*)0xE000E194)
+#define NVIC_ICER6						((__vo uint32_t*)0xE000E198)
+#define NVIC_ICER7						((__vo uint32_t*)0xE000E19C)
+
+/*
+ * ARM Cortex Mx Processor Priority Register Address Calculation
+ */
+#define NVIC_PR_BASE_ADDR	 			((__vo uint32_t*)0xE000E400)
+
+
+/*
+ * ARM Cortex Mx Processor number of priority bits implemented in Priority Register
+ */
+#define NO_PR_BITS_IMPLEMENTED			4
+
+
 /*
  * base addresses of Flash and SRAM memories
  */
@@ -137,6 +177,32 @@ typedef struct {
 
 
 /*
+ * Peripheral register definition structure for EXTI
+ */
+// Table 39. External interrupt/event controller register map and reset values
+typedef struct {
+	__vo uint32_t IMR;					// Interrupt mask register,											Address offset: 0x00
+	__vo uint32_t EMR;					// Event mask register,												Address offset: 0x04
+	__vo uint32_t RTSR;					// Rising trigger selection register,								Address offset: 0x08
+	__vo uint32_t FTSR;					// Falling trigger selection register, 								Address offset: 0x0C
+	__vo uint32_t SWIER;				// Software interrupt event register,								Address offset: 0x10
+	__vo uint32_t PR;					// Pending register, 												Address offset: 0x14
+} EXTI_RegDef_t;
+
+
+/*
+ * Peripheral register definition structure for SYSCFG
+ */
+// Table 23. SYSCFG register map and reset values
+typedef struct {
+	__vo uint32_t MEMRMP;				// SYSCFG memory remap register,									Address offset: 0x00
+	__vo uint32_t PMC;					// SYSCFG peripheral mode configuration register,					Address offset: 0x04
+	__vo uint32_t EXTICR[4];			// SYSCFG external interrupt configuration register,				Address offset: 0x08-0x14
+	uint32_t REVERSED1[2];
+	__vo uint32_t CMPCR;				// Compensation cell control register,								Address offset: 0x20
+} SYSCFG_RegDef_t;
+
+/*
  * Peripheral Definitions (Peripheral base addresses typecasted to xxx_RegDef_t)
  */
 #define GPIOA							((GPIO_RegDef_t*)GPIOA_BASEADDR)
@@ -149,6 +215,10 @@ typedef struct {
 #define GPIOH							((GPIO_RegDef_t*)GPIOH_BASEADDR)
 
 #define RCC								((RCC_RegDef_t*)RCC_BASEADDR)
+
+#define EXTI							((EXTI_RegDef_t*)EXTI_BASEADDR)
+
+#define SYSCFG							((SYSCFG_RegDef_t*)SYSCFG_BASEADDR)
 
 
 /*
@@ -246,6 +316,56 @@ typedef struct {
 //#define GPIOF_REG_RESET()
 //#define GPIOG_REG_RESET()
 #define GPIOH_REG_RESET()				do { (RCC->AHB1RSTR |= (1 << 7)); (RCC->AHB1RSTR &= ~(1 << 7)); } while (0)
+
+
+/*
+ * Returns port code for given GPIOx base address
+ */
+#define GPIO_BASEADDR_TO_CODE(x)		((x == GPIOA) ? 0 : \
+										 (x == GPIOB) ? 1 : \
+										 (x == GPIOC) ? 2 : \
+										 (x == GPIOD) ? 3 : \
+										 (x == GPIOE) ? 4 : \
+										 (x == GPIOH) ? 7 : 0)
+
+
+/*
+ * IRQ(Interrupt Request) Number of STM32F401CCUx MCU
+ */
+// Table 38. Vector table for STM32F401xB/CSTM32F401xD/E
+#define IRQ_NO_EXTI0					6
+#define IRQ_NO_EXTI1					7
+#define IRQ_NO_EXTI2					8
+#define IRQ_NO_EXTI3					9
+#define IRQ_NO_EXTI4					10
+#define IRQ_NO_EXTI9_5					23
+#define IRQ_NO_EXTI15_10				40
+#define IRQ_NO_EXTI16					1
+#define IRQ_NO_EXTI17					41
+#define IRQ_NO_EXTI18					42
+#define IRQ_NO_EXTI21					2
+#define IRQ_NO_EXTI22					3
+
+
+/*
+ * Macros for all the possible priority levels
+ */
+#define NVIC_IRQ_PRI0					0
+#define NVIC_IRQ_PRI1					1
+#define NVIC_IRQ_PRI2					2
+#define NVIC_IRQ_PRI3					3
+#define NVIC_IRQ_PRI4					4
+#define NVIC_IRQ_PRI5					5
+#define NVIC_IRQ_PRI6					6
+#define NVIC_IRQ_PRI7					7
+#define NVIC_IRQ_PRI8					8
+#define NVIC_IRQ_PRI9					9
+#define NVIC_IRQ_PRI10					10
+#define NVIC_IRQ_PRI11					11
+#define NVIC_IRQ_PRI12					12
+#define NVIC_IRQ_PRI13					13
+#define NVIC_IRQ_PRI14					14
+#define NVIC_IRQ_PRI15					15
 
 
 /*
