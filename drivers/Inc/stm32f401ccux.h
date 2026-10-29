@@ -100,8 +100,10 @@
 #define I2C2_BASEADDR					(APB1PERIPH_BASEADDR + 0x5800)
 #define I2C3_BASEADDR					(APB1PERIPH_BASEADDR + 0x5C00)
 
+#define SPI1_BASEADDR					(APB2PERIPH_BASEADDR + 0x3000)
 #define SPI2_BASEADDR					(APB1PERIPH_BASEADDR + 0x3800)
 #define SPI3_BASEADDR					(APB1PERIPH_BASEADDR + 0x3C00)
+#define SPI4_BASEADDR					(APB2PERIPH_BASEADDR + 0x3400)
 
 #define USART2_BASEADDR					(APB1PERIPH_BASEADDR + 0x4400)
 //#define USART3_BASEADDR
@@ -191,6 +193,23 @@ typedef struct {
 
 
 /*
+ * Peripheral register definition structure for SPI
+ */
+// Table 93. SPI register map and reset values
+typedef struct {
+	__vo uint32_t CR1;					// SPI control register 1,											Address offset: 0x00
+	__vo uint32_t CR2;					// SPI control register 2,											Address offset: 0x04
+	__vo uint32_t SR;					// SPI status register,												Address offset: 0x08
+	__vo uint32_t DR;					// SPI data register,												Address offset: 0x0C
+	__vo uint32_t CRCPR;				// SPI CRC polynomial register, 									Address offset: 0x10
+	__vo uint32_t RXCRCR;				// SPI RX CRC register,												Address offset: 0x14
+	__vo uint32_t TXCRCR;				// SPI TX CRC register, 											Address offset: 0x18
+	__vo uint32_t I2SCFGR;				// SPI_I2S configuration register, 									Address offset: 0x1C
+	__vo uint32_t I2SPR;				// SPI_I2S prescaler register, 										Address offset: 0x20
+} SPI_RegDef_t;
+
+
+/*
  * Peripheral register definition structure for SYSCFG
  */
 // Table 23. SYSCFG register map and reset values
@@ -217,6 +236,11 @@ typedef struct {
 #define RCC								((RCC_RegDef_t*)RCC_BASEADDR)
 
 #define EXTI							((EXTI_RegDef_t*)EXTI_BASEADDR)
+
+#define SPI1							((SPI_RegDef_t*)SPI1_BASEADDR)
+#define SPI2							((SPI_RegDef_t*)SPI2_BASEADDR)
+#define SPI3							((SPI_RegDef_t*)SPI3_BASEADDR)
+#define SPI4							((SPI_RegDef_t*)SPI4_BASEADDR)
 
 #define SYSCFG							((SYSCFG_RegDef_t*)SYSCFG_BASEADDR)
 
@@ -250,12 +274,14 @@ typedef struct {
 #define SPI3_PCLK_EN() 					(RCC->APB1ENR |= (1 << 15))
 #define SPI4_PCLK_EN() 					(RCC->APB2ENR |= (1 << 13))
 
+
 /*
  * Clock Enable Macros for USARTx peripherals
  */
 #define USART1_PCLK_EN() 				(RCC->APB2ENR |= (1 << 4))
 #define USART2_PCLK_EN() 				(RCC->APB1ENR |= (1 << 17))
 #define USART6_PCLK_EN() 				(RCC->APB2ENR |= (1 << 5))
+
 
 /*
  * Clock Enable Macros for SYSCFG peripheral
@@ -292,12 +318,14 @@ typedef struct {
 #define SPI3_PCLK_DI() 					(RCC->APB1ENR &= ~(1 << 15))
 #define SPI4_PCLK_DI() 					(RCC->APB2ENR &= ~(1 << 13))
 
+
 /*
  * Clock Disable Macros for USARTx peripherals
  */
 #define USART1_PCLK_DI() 				(RCC->APB2ENR &= ~(1 << 4))
 #define USART2_PCLK_DI() 				(RCC->APB1ENR &= ~(1 << 17))
 #define USART6_PCLK_DI() 				(RCC->APB2ENR &= ~(1 << 5))
+
 
 /*
  * Clock Disable Macros for SYSCFG peripheral
@@ -381,5 +409,6 @@ typedef struct {
 
 
 #include "stm32f401ccux_gpio_driver.h"
+#include "stm32f401ccux_spi_driver.h"
 
 #endif /* INC_STM32F401CCUX_H_ */
