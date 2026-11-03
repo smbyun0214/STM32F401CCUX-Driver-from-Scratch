@@ -86,6 +86,9 @@ void SPI_Init(SPI_Handle_t *pSPIHandle) {
 	// 6. Configure the CPHA
 	tempreg |= pSPIHandle->SPIConfig.SPI_CPHA << SPI_CR1_CPHA;
 
+	// 7. Configure the SSM
+	tempreg |= pSPIHandle->SPIConfig.SPI_SSM << SPI_CR1_SSM;
+
 	pSPIHandle->pSPIx->CR1 = tempreg;
 }
 
@@ -97,13 +100,6 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx) {
 /*
  * Data read and write
  */
-
-uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName) {
-	if (pSPIx->SR & FlagName) {
-		return FLAG_SET;
-	}
-	return FLAG_RESET;
-}
 
 /*****************************************************************
  * @fn				- SPI_SendData
@@ -120,7 +116,7 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName) {
  */
 void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t* pTxBuffer, uint32_t Len) {
 	while (Len > 0) {
-		// 1. Wait until TEX is set
+		// 1. Wait until TXE is set
 		while (SPI_GetFlagStatus(pSPIx, SPI_TXE_FLAG) == FLAG_RESET);
 
 		// 2. Check the DFF bit in CR1
@@ -137,7 +133,6 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t* pTxBuffer, uint32_t Len) {
 			Len--;
 			pTxBuffer++;
 		}
-
 	}
 }
 
@@ -155,7 +150,25 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t* pTxBuffer, uint32_t Len) {
  * @Note			- none
  */
 void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t* pRxBuffer, uint32_t Len) {
+	while (Len > 0) {
+		// 1. Wait until TXE is set
+		while (SPI_GetFlagStatus(pSPIx, SPI_RXNE_FLAG) == FLAG_RESET);
 
+		// 2. Check the DFF bit in CR1
+		if (pSPIx->CR1 & (1 << SPI_CR1_DFF)) {
+			// 16 bit DFF
+			// 1. Load the data from DR to to Rxbuffer address
+			*((uint16_t*)pRxBuffer) = pSPIx->DR;
+			Len--;
+			Len--;
+			(uint16_t*)pRxBuffer++;
+		} else {
+			// 8 bit DFF
+			*pRxBuffer = pSPIx->DR;
+			Len--;
+			pRxBuffer++;
+		}
+	}
 }
 
 
@@ -216,6 +229,25 @@ void SPI_IRQHandling(SPI_Handle_t *pSPIHandle) {
  */
 
 /*****************************************************************
+ * @fn				- SPI_GetFlagStatus
+ *
+ * @brief 			-
+ *
+ * @param[in]		-
+ * @param[in]		-
+ *
+ * @return 			-
+ *
+ * @Note			- none
+ */
+uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName) {
+	if (pSPIx->SR & FlagName) {
+		return FLAG_SET;
+	}
+	return FLAG_RESET;
+}
+
+/*****************************************************************
  * @fn				- SPI_PeripheralControl
  *
  * @brief 			-
@@ -236,7 +268,7 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi) {
 }
 
 /*****************************************************************
- * @fn				- SPI_SSICONFIG
+ * @fn				- SPI_SSIConfig
  *
  * @brief 			-
  *
@@ -247,10 +279,30 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi) {
  *
  * @Note			- none
  */
-void SPI_SSICONFIG(SPI_RegDef_t *pSPIx, uint8_t EnOrDi) {
+void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi) {
 	if (EnOrDi == ENABLE) {
 		pSPIx->CR1 |= (1 << SPI_CR1_SSI);
 	} else {
 		pSPIx->CR1 &= ~(1 << SPI_CR1_SSI);
+	}
+}
+
+/*****************************************************************
+ * @fn				- SPI_SSOEConfig
+ *
+ * @brief 			-
+ *
+ * @param[in]		-
+ * @param[in]		-
+ *
+ * @return 			-
+ *
+ * @Note			- none
+ */
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi) {
+	if (EnOrDi == ENABLE) {
+		pSPIx->CR2 |= (1 << SPI_CR2_SSOE);
+	} else {
+		pSPIx->CR2 &= ~(1 << SPI_CR2_SSOE);
 	}
 }
